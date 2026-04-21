@@ -158,6 +158,10 @@ function registerRoulette(io) {
       if (parsedAmount > 40000)
         return socket.emit('roulette:error', { message: 'Mise maximum : 40 000 $.' });
 
+      const existingOnType = bets[socket.userId]?.amounts[betType] || 0;
+      if (existingOnType + parsedAmount > 40000)
+        return socket.emit('roulette:error', { message: `Mise maximum atteinte sur ce type (40 000 $). Déjà misé : ${existingOnType} $.` });
+
       try {
         const user = await User.findByPk(socket.userId);
         if (!user)

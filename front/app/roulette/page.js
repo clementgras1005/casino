@@ -154,6 +154,7 @@ export default function RoulettePage() {
   const spinMode          = useRef('idle');
   const resultClearRef    = useRef(null);
   const spinningRef       = useRef(false); // true pendant l'animation, bloque les mises à jour d'historique
+  const pendingBalanceRef = useRef(null);  // solde reçu pendant l'animation, appliqué après
 
   const [secondsLeft,  setSecondsLeft]  = useState(20);
   const [betsOpen,     setBetsOpen]     = useState(true);
@@ -239,6 +240,10 @@ export default function RoulettePage() {
       // Affiche résultat et historique après animation
       setTimeout(() => {
         spinningRef.current = false;
+        if (pendingBalanceRef.current !== null) {
+          updateBalance(pendingBalanceRef.current);
+          pendingBalanceRef.current = null;
+        }
         setResult(r);
         setWinnerNum(r.number);
         setWinners(w);
@@ -288,7 +293,13 @@ export default function RoulettePage() {
     });
 
     socket.on('roulette:error',   ({ message }) => flash(message, true));
-    socket.on('balance:update',   ({ balance })  => updateBalance(balance));
+    socket.on('balance:update', ({ balance }) => {
+      if (spinningRef.current) {
+        pendingBalanceRef.current = balance;
+      } else {
+        updateBalance(balance);
+      }
+    });
 
     return () => {
       socket.disconnect();
@@ -608,10 +619,6 @@ export default function RoulettePage() {
             </div>
           )}
 
-          {betAmountError && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginBottom: '0.8rem', backgroundColor: 'rgba(224,85,85,0.1)', border: '1px solid rgba(224,85,85,0.3)', color: 'var(--error)', fontSize: '0.82rem' }}>{betAmountError}</div>}
-          {error  && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginBottom: '0.8rem', backgroundColor: 'rgba(224,85,85,0.1)', border: '1px solid rgba(224,85,85,0.3)', color: 'var(--error)', fontSize: '0.82rem' }}>{error}</div>}
-          {notice && !error && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginBottom: '0.8rem', backgroundColor: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)', color: 'var(--gold)', fontSize: '0.82rem' }}>{notice}</div>}
-
           <button onClick={placeBet} disabled={!betsOpen || !!betAmountError || !betAmount} style={{
             width: '100%', padding: '0.85rem',
             backgroundColor: !betsOpen || betAmountError || !betAmount ? 'var(--bg-surface)' : 'var(--gold)',
@@ -623,6 +630,10 @@ export default function RoulettePage() {
           }}>
             {!betsOpen ? 'Mises clôturées' : 'Miser'}
           </button>
+
+          {betAmountError && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginTop: '0.8rem', backgroundColor: 'rgba(224,85,85,0.1)', border: '1px solid rgba(224,85,85,0.3)', color: 'var(--error)', fontSize: '0.82rem' }}>{betAmountError}</div>}
+          {error   && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginTop: '0.8rem', backgroundColor: 'rgba(224,85,85,0.1)', border: '1px solid rgba(224,85,85,0.3)', color: 'var(--error)', fontSize: '0.82rem' }}>{error}</div>}
+          {notice && !error && <div style={{ padding: '0.6rem 0.9rem', borderRadius: 4, marginTop: '0.8rem', backgroundColor: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.3)', color: 'var(--gold)', fontSize: '0.82rem' }}>{notice}</div>}
         </div>
 
       </main>
