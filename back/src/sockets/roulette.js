@@ -16,10 +16,10 @@ const NUMBER_COLOR = {
 };
 
 const BET_CONFIG = {
-  rouge: { numbers: [3, 5, 7, 9, 11], multiplier: 2  },
-  noir:  { numbers: [2, 4, 6, 8, 10], multiplier: 2  },
-  ng:    { numbers: [1, 12],          multiplier: 7  },
-  vert:  { numbers: [0],              multiplier: 12 },
+  rouge: { numbers: [1, 3, 5, 7, 9, 11], multiplier: 2  },
+  noir:  { numbers: [2, 4, 6, 8, 10, 12], multiplier: 2  },
+  ng:    { numbers: [1, 12],              multiplier: 7  },
+  vert:  { numbers: [0],                  multiplier: 12 },
 };
 
 const getMultiplier = (number, betType) => {

@@ -455,7 +455,8 @@ export default function RoulettePage() {
                 Numéro gagnant
               </p>
               <p style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 0.4rem' }}>
-                {result.isSpecial ? 'NationsGlory' : result.color === 'green' ? 'Vert' : result.color === 'red' ? 'Rouge' : 'Noir'}
+                {result.color === 'green' ? 'Vert' : result.color === 'red' ? 'Rouge' : 'Noir'}
+                {result.isSpecial ? ' — NationsGlory' : ''}
               </p>
               <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.85rem', margin: 0 }}>
                 {winners.filter(w => w.gain > 0).length === 0
@@ -486,7 +487,7 @@ export default function RoulettePage() {
             </div>
             <div>
               <p style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '0.9rem', margin: '0 0 0.2rem' }}>
-                Dernier résultat : {result.number} — {result.isSpecial ? 'NationsGlory' : result.color === 'green' ? 'Vert' : result.color === 'red' ? 'Rouge' : 'Noir'}
+                Dernier résultat : {result.number} — {result.color === 'green' ? 'Vert' : result.color === 'red' ? 'Rouge' : 'Noir'}{result.isSpecial ? ' NationsGlory' : ''}
               </p>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: 0 }}>
                 {winners.filter(w => w.gain > 0).map(w => `${w.pseudo} +${w.gain} $`).join(' · ') || 'Aucun gagnant'}
