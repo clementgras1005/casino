@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base: #08080f;
+  --bg-surface: #10101a;
+  --bg-card: #16161f;
+  --bg-card-hover: #1c1c28;
+  --border: #252535;
+  --gold: #c9a84c;
+  --gold-light: #e2c476;
+  --gold-dark: #a8882e;
+  --text-primary: #f0ead8;
+  --text-muted: #7a7a95;
+  --text-subtle: #4a4a65;
+  --error: #e05555;
+  --success: #4caf85;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-card) inset;
+  -webkit-text-fill-color: var(--text-primary);
+}
