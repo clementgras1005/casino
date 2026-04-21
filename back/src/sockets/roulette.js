@@ -47,7 +47,7 @@ function registerRoulette(io) {
   };
 
   const broadcastState = () => {
-    io.to('roulette').emit('roulette:state', { secondsLeft, betsOpen, currentResult, history });
+    io.to('roulette').emit('roulette:state', { secondsLeft, betsOpen, currentResult });
   };
 
   const startNewRound = () => {
@@ -158,24 +158,28 @@ function registerRoulette(io) {
       if (parsedAmount > 40000)
         return socket.emit('roulette:error', { message: 'Mise maximum : 40 000 $.' });
 
-      const existingOnType = bets[socket.userId]?.amounts[betType] || 0;
+      if (!bets[socket.userId])
+        bets[socket.userId] = { pseudo: socket.userPseudo, amounts: {} };
+
+      const existingOnType = bets[socket.userId].amounts[betType] || 0;
       if (existingOnType + parsedAmount > 40000)
         return socket.emit('roulette:error', { message: `Mise maximum atteinte sur ce type (40 000 $). Déjà misé : ${existingOnType} $.` });
 
+      // Verrouille le slot avant les await pour bloquer les requêtes concurrentes
+      bets[socket.userId].amounts[betType] = existingOnType + parsedAmount;
+
       try {
         const user = await User.findByPk(socket.userId);
-        if (!user)
+        if (!user) {
+          bets[socket.userId].amounts[betType] = existingOnType;
           return socket.emit('roulette:error', { message: 'Utilisateur introuvable.' });
-        if (parseFloat(user.balance) < parsedAmount)
+        }
+        if (parseFloat(user.balance) < parsedAmount) {
+          bets[socket.userId].amounts[betType] = existingOnType;
           return socket.emit('roulette:error', { message: 'Solde insuffisant.' });
+        }
 
         await user.decrement('balance', { by: parsedAmount });
-
-        if (!bets[socket.userId])
-          bets[socket.userId] = { pseudo: socket.userPseudo, amounts: {} };
-
-        bets[socket.userId].amounts[betType] =
-          (bets[socket.userId].amounts[betType] || 0) + parsedAmount;
 
         const updated = await User.findByPk(socket.userId, { attributes: ['balance'] });
         socket.emit('balance:update', { balance: parseFloat(updated.balance) });
@@ -189,6 +193,7 @@ function registerRoulette(io) {
           pseudo: socket.userPseudo, betType, amount: parsedAmount,
         });
       } catch (err) {
+        bets[socket.userId].amounts[betType] = existingOnType;
         console.error('Bet error:', err.message);
         socket.emit('roulette:error', { message: 'Erreur serveur.' });
       }
