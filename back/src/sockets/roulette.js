@@ -4,7 +4,7 @@ const User = require('../models/User');
 const ROUND_DURATION        = 30;
 const BETS_CLOSE_AT         = 12;  // ferme quand il reste 12s (18s de mises)
 const SPIN_AT               = 8;   // spin quand il reste 8s (4s de fermeture)
-const RESULT_PHASE_DURATION = 9000; // ms — pause après timer=0 avant nouveau round
+const RESULT_PHASE_DURATION = 6000; // ms — pause après timer=0 avant nouveau round
 
 // Aucune couleur identique adjacente, 0 au centre, 1 et 12 voisins du 0
 const WHEEL_ORDER = [7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6];
@@ -182,8 +182,7 @@ function registerRoulette(io) {
 
         await user.decrement('balance', { by: parsedAmount });
 
-        const updated = await User.findByPk(socket.userId, { attributes: ['balance'] });
-        socket.emit('balance:update', { balance: parseFloat(updated.balance) });
+        socket.emit('balance:update', { balance: parseFloat(user.balance) - parsedAmount });
         socket.emit('roulette:bet_confirmed', {
           betType,
           amount: parsedAmount,

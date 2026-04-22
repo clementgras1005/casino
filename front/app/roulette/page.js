@@ -382,7 +382,7 @@ export default function RoulettePage() {
               height: '100%', borderRadius: 2,
               width: timerEnded ? '0%' : `${(secondsLeft / 30) * 100}%`,
               backgroundColor: timerColor,
-              transition: 'width 0.9s linear, background-color 0.3s',
+              transition: 'width 1s linear, background-color 0.3s',
             }} />
           </div>
 
