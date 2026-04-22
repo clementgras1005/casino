@@ -175,14 +175,15 @@ function registerRoulette(io) {
           bets[socket.userId].amounts[betType] = existingOnType;
           return socket.emit('roulette:error', { message: 'Utilisateur introuvable.' });
         }
-        if (parseFloat(user.balance) < parsedAmount) {
+        const balanceBefore = parseFloat(user.balance);
+        if (balanceBefore < parsedAmount) {
           bets[socket.userId].amounts[betType] = existingOnType;
           return socket.emit('roulette:error', { message: 'Solde insuffisant.' });
         }
 
         await user.decrement('balance', { by: parsedAmount });
 
-        socket.emit('balance:update', { balance: parseFloat(user.balance) - parsedAmount });
+        socket.emit('balance:update', { balance: balanceBefore - parsedAmount });
         socket.emit('roulette:bet_confirmed', {
           betType,
           amount: parsedAmount,
