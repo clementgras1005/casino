@@ -11,7 +11,7 @@ const SOCKET_URL    = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000
 const BETS_CLOSE_AT = 8;
 const ANIM_MS       = 5500;
 const BET_MIN       = 150;
-const BET_MAX       = 40000;
+const BET_MAX = { rouge: 40000, noir: 40000, ng: 25000, vert: 15000 };
 
 // Aucune couleur identique adjacente, 0 au centre, 1 et 12 voisins du 0
 const WHEEL_ORDER = [7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6];
@@ -312,10 +312,11 @@ export default function RoulettePage() {
     socketRef.current.emit('roulette:bet', { betType, amount: betAmount });
   };
 
+  const currentMax = BET_MAX[betType] ?? 40000;
   const betAmountError = !betAmount
     ? ''
     : betAmount < BET_MIN ? `Mise minimum : ${BET_MIN.toLocaleString('fr-FR')} $`
-    : betAmount > BET_MAX ? `Mise maximum : ${BET_MAX.toLocaleString('fr-FR')} $`
+    : betAmount > currentMax ? `Mise maximum : ${currentMax.toLocaleString('fr-FR')} $`
     : '';
 
   const timerColor  = secondsLeft <= 3 ? '#e05555' : secondsLeft <= BETS_CLOSE_AT ? '#e09c55' : '#c9a84c';
@@ -594,7 +595,7 @@ export default function RoulettePage() {
                 }}
               />
             </div>
-            {[150, 500, 1000, 5000, 40000].map(v => (
+            {[150, 500, 1000, 5000, 15000, 25000, 40000].filter(v => v <= currentMax).map(v => (
               <button key={v} onClick={() => setBetAmount(v)} disabled={!betsOpen} style={{
                 padding: '0.55rem 0.8rem', borderRadius: 4,
                 border: `1px solid ${betAmount === v ? 'var(--gold)' : 'var(--border)'}`,

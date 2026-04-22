@@ -16,10 +16,10 @@ const NUMBER_COLOR = {
 };
 
 const BET_CONFIG = {
-  rouge: { numbers: [1, 3, 5, 7, 9, 11], multiplier: 2  },
-  noir:  { numbers: [2, 4, 6, 8, 10, 12], multiplier: 2  },
-  ng:    { numbers: [1, 12],              multiplier: 7  },
-  vert:  { numbers: [0],                  multiplier: 12 },
+  rouge: { numbers: [1, 3, 5, 7, 9, 11], multiplier: 2,  maxBet: 40000 },
+  noir:  { numbers: [2, 4, 6, 8, 10, 12], multiplier: 2, maxBet: 40000 },
+  ng:    { numbers: [1, 12],              multiplier: 7,  maxBet: 25000 },
+  vert:  { numbers: [0],                  multiplier: 12, maxBet: 15000 },
 };
 
 const getMultiplier = (number, betType) => {
@@ -153,17 +153,18 @@ function registerRoulette(io) {
         return socket.emit('roulette:error', { message: 'Type de mise invalide.' });
 
       const parsedAmount = parseInt(amount, 10);
+      const maxBet = BET_CONFIG[betType].maxBet;
       if (!parsedAmount || parsedAmount < 150)
         return socket.emit('roulette:error', { message: 'Mise minimum : 150 $.' });
-      if (parsedAmount > 40000)
-        return socket.emit('roulette:error', { message: 'Mise maximum : 40 000 $.' });
+      if (parsedAmount > maxBet)
+        return socket.emit('roulette:error', { message: `Mise maximum : ${maxBet.toLocaleString('fr-FR')} $.` });
 
       if (!bets[socket.userId])
         bets[socket.userId] = { pseudo: socket.userPseudo, amounts: {} };
 
       const existingOnType = bets[socket.userId].amounts[betType] || 0;
-      if (existingOnType + parsedAmount > 40000)
-        return socket.emit('roulette:error', { message: `Mise maximum atteinte sur ce type (40 000 $). Déjà misé : ${existingOnType} $.` });
+      if (existingOnType + parsedAmount > maxBet)
+        return socket.emit('roulette:error', { message: `Mise maximum atteinte sur ce type (${maxBet.toLocaleString('fr-FR')} $). Déjà misé : ${existingOnType} $.` });
 
       // Verrouille le slot avant les await pour bloquer les requêtes concurrentes
       bets[socket.userId].amounts[betType] = existingOnType + parsedAmount;
