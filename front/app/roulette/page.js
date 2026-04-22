@@ -319,7 +319,7 @@ export default function RoulettePage() {
     : betAmount > currentMax ? `Mise maximum : ${currentMax.toLocaleString('fr-FR')} $`
     : '';
 
-  const timerColor  = secondsLeft <= 3 ? '#e05555' : secondsLeft <= BETS_CLOSE_AT ? '#e09c55' : '#c9a84c';
+  const timerColor  = secondsLeft <= 5 ? '#e05555' : secondsLeft <= BETS_CLOSE_AT ? '#e09c55' : '#c9a84c';
   const allBetsList = Object.values(allBets);
   const myBetsTotal = Object.values(myBets).reduce((s, v) => s + v, 0);
   const betTotals   = BET_TYPES.reduce((acc, bt) => {
