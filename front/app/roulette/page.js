@@ -156,13 +156,14 @@ export default function RoulettePage() {
   const spinningRef       = useRef(false); // true pendant l'animation, bloque les mises à jour d'historique
   const pendingBalanceRef = useRef(null);  // solde reçu pendant l'animation, appliqué après
 
-  const [secondsLeft,  setSecondsLeft]  = useState(20);
-  const [betsOpen,     setBetsOpen]     = useState(true);
-  const [result,       setResult]       = useState(null);
-  const [winnerNum,    setWinnerNum]    = useState(null);
-  const [winners,      setWinners]      = useState([]);
-  const [timerEnded,   setTimerEnded]   = useState(false);
-  const [history,      setHistory]      = useState([]);
+  const [secondsLeft,    setSecondsLeft]    = useState(30);
+  const [betsOpen,       setBetsOpen]       = useState(true);
+  const [result,         setResult]         = useState(null);
+  const [winnerNum,      setWinnerNum]      = useState(null);
+  const [winners,        setWinners]        = useState([]);
+  const [timerEnded,     setTimerEnded]     = useState(false);
+  const [resultShowing,  setResultShowing]  = useState(false);
+  const [history,        setHistory]        = useState([]);
   const [allBets,      setAllBets]      = useState({});
   const [myBets,       setMyBets]       = useState({});
   const [betType,      setBetType]      = useState('rouge');
@@ -179,7 +180,7 @@ export default function RoulettePage() {
   useEffect(() => {
     let raf;
     const loop = () => {
-      if (spinMode.current !== 'landing' && wheelRef.current) {
+      if (spinMode.current !== 'landing' && spinMode.current !== 'stopped' && wheelRef.current) {
         angleRef.current += spinMode.current === 'fast' ? 4.5 : 0.15;
         wheelRef.current.style.transform = `rotate(${angleRef.current}deg)`;
       }
@@ -209,7 +210,7 @@ export default function RoulettePage() {
 
     setTimeout(() => {
       if (wheelRef.current) wheelRef.current.style.transition = 'none';
-      spinMode.current = 'idle';
+      spinMode.current = 'stopped';
     }, ANIM_MS + 100);
   }, []);
 
@@ -247,6 +248,7 @@ export default function RoulettePage() {
         setResult(r);
         setWinnerNum(r.number);
         setWinners(w);
+        setResultShowing(true);
         if (h) setHistory(h);
       }, ANIM_MS + 200);
     });
@@ -261,7 +263,8 @@ export default function RoulettePage() {
       setAllBets({});
       setBetsOpen(true);
       setTimerEnded(false);
-      if (spinMode.current !== 'landing') spinMode.current = 'idle';
+      setResultShowing(false);
+      spinMode.current = 'idle';
       // Garde le résultat visible encore 5s puis efface
       if (resultClearRef.current) clearTimeout(resultClearRef.current);
       resultClearRef.current = setTimeout(() => {
@@ -433,7 +436,7 @@ export default function RoulettePage() {
         )}
 
         {/* Pause résultat — plein écran sobre */}
-        {timerEnded && result && (
+        {resultShowing && result && (
           <div className="result-card" style={{
             backgroundColor: `${SEG_COLORS[result.color].fill}`,
             border: `2px solid #c9a84c`,
@@ -469,7 +472,7 @@ export default function RoulettePage() {
         )}
 
         {/* Résultat compact (nouveau round, résultat encore visible) */}
-        {!timerEnded && result && (
+        {!resultShowing && result && (
           <div style={{
             backgroundColor: `${SEG_COLORS[result.color].stroke}18`,
             border: `1px solid ${SEG_COLORS[result.color].stroke}`,
