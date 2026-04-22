@@ -8,7 +8,7 @@ import Header from '@/components/Header';
 import { useAuth } from '@/context/AuthContext';
 
 const SOCKET_URL    = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace('/api', '');
-const BETS_CLOSE_AT = 8;
+const BETS_CLOSE_AT = 12;
 const ANIM_MS       = 5500;
 const BET_MIN       = 150;
 const BET_MAX = { rouge: 40000, noir: 40000, ng: 25000, vert: 15000 };
@@ -380,7 +380,7 @@ export default function RoulettePage() {
           <div style={{ flex: 1, minWidth: 100, height: 4, backgroundColor: 'var(--bg-surface)', borderRadius: 2, overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: 2,
-              width: timerEnded ? '0%' : `${(secondsLeft / 20) * 100}%`,
+              width: timerEnded ? '0%' : `${(secondsLeft / 30) * 100}%`,
               backgroundColor: timerColor,
               transition: 'width 0.9s linear, background-color 0.3s',
             }} />
