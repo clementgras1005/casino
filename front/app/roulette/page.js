@@ -34,7 +34,7 @@ const SEG_COLORS = {
 const BET_TYPES = [
   { value: 'rouge', label: 'Rouge',      sub: 'x2',  fill: '#3d0a0a', border: '#c0392b' },
   { value: 'noir',  label: 'Noir',       sub: 'x2',  fill: '#0a0a1f', border: '#4a4aaa' },
-  { value: 'ng',    label: 'NG (1 & 12)', sub: 'x7', fill: '#1a0d2e', border: '#c9a84c', special: true },
+  { value: 'ng',    label: 'NG (1 & 12)', sub: 'x6', fill: '#1a0d2e', border: '#c9a84c', special: true },
   { value: 'vert',  label: 'Vert',       sub: 'x12', fill: '#0a3d1f', border: '#1a9e4a' },
 ];
 

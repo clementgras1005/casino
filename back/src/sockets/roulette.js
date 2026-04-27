@@ -18,7 +18,7 @@ const NUMBER_COLOR = {
 const BET_CONFIG = {
   rouge: { numbers: [1, 3, 5, 7, 9, 11], multiplier: 2,  maxBet: 40000 },
   noir:  { numbers: [2, 4, 6, 8, 10, 12], multiplier: 2, maxBet: 40000 },
-  ng:    { numbers: [1, 12],              multiplier: 7,  maxBet: 25000 },
+  ng:    { numbers: [1, 12],              multiplier: 6,  maxBet: 25000 },
   vert:  { numbers: [0],                  multiplier: 12, maxBet: 15000 },
 };
 
