@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const authenticate  = require('../middleware/authenticate');
 const requireAdmin  = require('../middleware/requireAdmin');
-const { getUsers, getWithdrawals, validateWithdrawal, refuseWithdrawal, getDeposits, validateDeposit, refuseDeposit } = require('../controllers/adminController');
+const { getUsers, getWithdrawals, validateWithdrawal, refuseWithdrawal, getDeposits, validateDeposit, refuseDeposit, getStats } = require('../controllers/adminController');
 
+router.get('/stats',                          authenticate, requireAdmin, getStats);
 router.get('/users',                          authenticate, requireAdmin, getUsers);
 router.get('/withdrawals',                    authenticate, requireAdmin, getWithdrawals);
 router.patch('/withdrawals/:id/validate',     authenticate, requireAdmin, validateWithdrawal);

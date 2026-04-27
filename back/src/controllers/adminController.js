@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
 const User = require('../models/User');
 const Withdrawal = require('../models/Withdrawal');
 const Deposit = require('../models/Deposit');
@@ -116,4 +116,25 @@ const validateDeposit = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getWithdrawals, validateWithdrawal, refuseWithdrawal, getDeposits, validateDeposit, refuseDeposit };
+const getStats = async (req, res) => {
+  try {
+    const [depRow] = await Deposit.findAll({
+      where: { status: 'processed' },
+      attributes: [[fn('SUM', col('amount')), 'total']],
+      raw: true,
+    });
+    const [witRow] = await Withdrawal.findAll({
+      where: { status: 'processed' },
+      attributes: [[fn('SUM', col('amount')), 'total']],
+      raw: true,
+    });
+    const totalDeposits    = parseFloat(depRow?.total || 0);
+    const totalWithdrawals = parseFloat(witRow?.total || 0);
+    return res.json({ totalDeposits, totalWithdrawals, profit: totalDeposits - totalWithdrawals });
+  } catch (err) {
+    console.error('Admin getStats error:', err.message);
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+};
+
+module.exports = { getUsers, getWithdrawals, validateWithdrawal, refuseWithdrawal, getDeposits, validateDeposit, refuseDeposit, getStats };
