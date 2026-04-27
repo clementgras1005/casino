@@ -30,7 +30,8 @@ export default function AdminPage() {
   const [validatingD, setValidatingD] = useState(null);
   const [refusingD,   setRefusingD]   = useState(null);
 
-  const [stats, setStats] = useState(null);
+  const [stats,       setStats]       = useState(null);
+  const [showStats,   setShowStats]   = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setUsersLoading(true);
@@ -164,23 +165,34 @@ export default function AdminPage() {
         {/* Bénéfice casino */}
         {stats && (
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem',
-            backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '1.2rem',
+            backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, padding: '1.2rem', marginBottom: '1.5rem',
           }}>
-            <div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Dépôts validés</p>
-              <p style={{ color: '#4caf85', fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>+{stats.totalDeposits.toLocaleString('fr-FR')} $</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showStats ? '1rem' : 0 }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Finances casino</p>
+              <button onClick={() => setShowStats(s => !s)} style={{
+                background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)',
+                cursor: 'pointer', fontSize: '0.72rem', padding: '0.2rem 0.7rem', borderRadius: 4,
+                letterSpacing: '0.5px',
+              }}>{showStats ? 'Masquer' : 'Afficher'}</button>
             </div>
-            <div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Retraits validés</p>
-              <p style={{ color: '#e05555', fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>-{stats.totalWithdrawals.toLocaleString('fr-FR')} $</p>
-            </div>
-            <div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Bénéfice net casino</p>
-              <p style={{ color: stats.profit >= 0 ? 'var(--gold)' : '#e05555', fontSize: '1.3rem', fontWeight: 'bold', margin: 0 }}>
-                {stats.profit >= 0 ? '+' : ''}{stats.profit.toLocaleString('fr-FR')} $
-              </p>
-            </div>
+            {showStats && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Dépôts validés</p>
+                  <p style={{ color: '#4caf85', fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>+{stats.totalDeposits.toLocaleString('fr-FR')} $</p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Retraits validés</p>
+                  <p style={{ color: '#e05555', fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>-{stats.totalWithdrawals.toLocaleString('fr-FR')} $</p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 0.3rem' }}>Bénéfice net</p>
+                  <p style={{ color: stats.profit >= 0 ? 'var(--gold)' : '#e05555', fontSize: '1.3rem', fontWeight: 'bold', margin: 0 }}>
+                    {stats.profit >= 0 ? '+' : ''}{stats.profit.toLocaleString('fr-FR')} $
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
